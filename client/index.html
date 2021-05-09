@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Making a Simple Chat Application Using Socket Io </title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+ 
+  
+  </head>
+  <body>
+    <h2>Chat Application For Learner- How to use SOCKET.IO</h2>
+    <div class="MainChatWindow">
+      <div id="output"></div>
+      <div id="feedback"></div>
+      <input type="text" id="Username" placeholder="Enter Your Name" />
+      <input type="text" id="message" placeholder="Enter Your Message" />
+      <button type="submit" id="SendMessage">Send</button>
+    </div>
+   <script>
+     
+     var socket = io.connect("http://localhost:5000");
+      
+      (output = document.getElementById("output")),
+        (usrname = document.getElementById("Username")),
+        (message = document.getElementById("message")),
+        (btn = document.getElementById("SendMessage")),
+        (feedback = document.getElementById("feedback"));
+
+      btn.addEventListener("click", function () {
+        socket.emit("chat", {
+          message: message.value,
+          name: usrname.value,
+        });
+        // After Sending the Message , Clear the input field
+        feedback.innerHTML = "";
+        message.value = "";
+        usrname.value = "";
+      });
+
+      // For typing
+      message.addEventListener("keypress", function () {
+        socket.emit("typing", usrname.value);
+      });
+
+      // Listen for events
+
+      socket.on("chat", function (data) {
+        output.innerHTML +=
+          "<p><strong>" + data.name + ":</strong>" + data.message + "</p>";
+      });
+
+      socket.on("typing", function (data) {
+        feedback.innerText = data + " is typing...";
+      });
+    
+   </script>
+  </body>
+</html>
